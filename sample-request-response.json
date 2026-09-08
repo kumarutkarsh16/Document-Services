@@ -1,0 +1,105 @@
+{
+  "description": "Sample payloads for POST /v1/submissions and GET /v1/submissions/{id}, matching the schemas in openapi.yaml.",
+
+  "request": {
+    "method": "POST",
+    "url": "https://api.hr-portal.local/v1/submissions",
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "employeeName": "Kumar Utkarsh",
+      "requestId": "REQ-2026-0091",
+      "documentType": "passport",
+      "submissionDate": "2026-09-08",
+      "documentName": "passport_scan.pdf",
+      "consent": true
+    }
+  },
+
+  "responses": {
+    "201_created": {
+      "status": 201,
+      "body": {
+        "id": "sub_lihdv207",
+        "status": "received",
+        "employeeName": "Kumar Utkarsh",
+        "requestId": "REQ-2026-0091",
+        "documentType": "passport",
+        "submissionDate": "2026-09-08",
+        "documentName": "passport_scan.pdf",
+        "createdAt": "2026-09-08T11:29:04.000Z"
+      }
+    },
+
+    "400_validation_error": {
+      "status": 400,
+      "body": {
+        "error": "validation_error",
+        "message": "One or more fields failed server-side validation.",
+        "fields": {
+          "documentType": "Document type is not recognized."
+        }
+      }
+    },
+
+    "401_unauthorized": {
+      "status": 401,
+      "body": {
+        "error": "unauthorized",
+        "message": "Your session has expired. Please sign in again."
+      }
+    },
+
+    "404_not_found": {
+      "status": 404,
+      "body": {
+        "error": "not_found",
+        "message": "The submissions endpoint could not be found."
+      }
+    },
+
+    "409_conflict": {
+      "status": 409,
+      "body": {
+        "error": "conflict",
+        "message": "A submission with this Request ID already exists."
+      }
+    },
+
+    "500_server_error": {
+      "status": 500,
+      "body": {
+        "error": "server_error",
+        "message": "Something went wrong while processing your request."
+      }
+    }
+  },
+
+  "get_submission_status": {
+    "request": {
+      "method": "GET",
+      "url": "https://api.hr-portal.local/v1/submissions/sub_lihdv207"
+    },
+    "response_200": {
+      "status": 200,
+      "body": {
+        "id": "sub_lihdv207",
+        "status": "received",
+        "employeeName": "Kumar Utkarsh",
+        "requestId": "REQ-2026-0091",
+        "documentType": "passport",
+        "submissionDate": "2026-09-08",
+        "documentName": "passport_scan.pdf",
+        "createdAt": "2026-09-08T11:29:04.000Z"
+      }
+    },
+    "response_404": {
+      "status": 404,
+      "body": {
+        "error": "not_found",
+        "message": "No submission found with id sub_unknown123"
+      }
+    }
+  }
+}

@@ -1,0 +1,291 @@
+openapi: 3.0.3
+info:
+  title: New Hire Document Submission API
+  description: >
+    API for submitting new-hire onboarding documents and checking the
+    status of a previously submitted request.
+  version: 1.0.0
+
+servers:
+  - url: https://api.hr-portal.local/v1
+    description: Mock/local development server
+
+tags:
+  - name: Submissions
+    description: Create and retrieve document submissions
+
+paths:
+  /submissions:
+    post:
+      tags: [Submissions]
+      summary: Submit a new-hire document
+      description: >
+        Creates a new document submission record for a new hire.
+        Request IDs must be unique; submitting a duplicate Request ID
+        returns 409 Conflict.
+      operationId: createSubmission
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubmissionRequest'
+            examples:
+              validSubmission:
+                summary: A valid submission
+                value:
+                  employeeName: "Kumar Utkarsh"
+                  requestId: "REQ-2026-0091"
+                  documentType: "passport"
+                  submissionDate: "2026-09-08"
+                  documentName: "passport_scan.pdf"
+                  consent: true
+      responses:
+        '201':
+          description: Submission created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubmissionRecord'
+              examples:
+                created:
+                  $ref: '#/components/examples/SubmissionRecordExample'
+        '400':
+          description: The request body failed validation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+              examples:
+                invalidDocumentType:
+                  $ref: '#/components/examples/ValidationErrorExample'
+        '401':
+          description: Missing or invalid authentication
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                unauthorized:
+                  $ref: '#/components/examples/UnauthorizedExample'
+        '404':
+          description: The submissions resource could not be found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                notFound:
+                  $ref: '#/components/examples/NotFoundExample'
+        '409':
+          description: A submission with this Request ID already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                conflict:
+                  $ref: '#/components/examples/ConflictExample'
+        '500':
+          description: Unexpected server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                serverError:
+                  $ref: '#/components/examples/ServerErrorExample'
+
+  /submissions/{id}:
+    get:
+      tags: [Submissions]
+      summary: Retrieve the status of a submission
+      operationId: getSubmissionStatus
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The submission ID returned when the submission was created
+          schema:
+            type: string
+            example: "sub_lihdv207"
+      responses:
+        '200':
+          description: Submission found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubmissionRecord'
+              examples:
+                found:
+                  $ref: '#/components/examples/SubmissionRecordExample'
+        '401':
+          description: Missing or invalid authentication
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                unauthorized:
+                  $ref: '#/components/examples/UnauthorizedExample'
+        '404':
+          description: No submission exists with the given ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                notFound:
+                  summary: Unknown submission ID
+                  value:
+                    error: "not_found"
+                    message: "No submission found with id sub_unknown123"
+        '500':
+          description: Unexpected server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                serverError:
+                  $ref: '#/components/examples/ServerErrorExample'
+
+components:
+  schemas:
+    SubmissionRequest:
+      type: object
+      required:
+        - employeeName
+        - requestId
+        - documentType
+        - submissionDate
+        - documentName
+        - consent
+      properties:
+        employeeName:
+          type: string
+          minLength: 1
+          example: "Kumar Utkarsh"
+        requestId:
+          type: string
+          description: A unique identifier for this submission request
+          minLength: 1
+          example: "REQ-2026-0091"
+        documentType:
+          type: string
+          enum: [passport, pan, resume, address-proof]
+          example: "passport"
+        submissionDate:
+          type: string
+          format: date
+          example: "2026-09-08"
+        documentName:
+          type: string
+          description: Original filename of the uploaded document
+          example: "passport_scan.pdf"
+        consent:
+          type: boolean
+          description: Must be true; confirms the submitter attests the information is accurate
+          example: true
+
+    SubmissionRecord:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "sub_lihdv207"
+        status:
+          type: string
+          enum: [received, in_review, approved, rejected]
+          example: "received"
+        employeeName:
+          type: string
+          example: "Kumar Utkarsh"
+        requestId:
+          type: string
+          example: "REQ-2026-0091"
+        documentType:
+          type: string
+          example: "passport"
+        submissionDate:
+          type: string
+          format: date
+          example: "2026-09-08"
+        documentName:
+          type: string
+          example: "passport_scan.pdf"
+        createdAt:
+          type: string
+          format: date-time
+          example: "2026-09-08T11:29:04.000Z"
+
+    ErrorResponse:
+      type: object
+      required: [error, message]
+      properties:
+        error:
+          type: string
+          description: A short machine-readable error code
+          example: "server_error"
+        message:
+          type: string
+          description: A human-readable explanation
+          example: "Something went wrong while processing your request."
+
+    ValidationErrorResponse:
+      allOf:
+        - $ref: '#/components/schemas/ErrorResponse'
+        - type: object
+          properties:
+            fields:
+              type: object
+              description: Per-field validation messages, keyed by field name
+              additionalProperties:
+                type: string
+              example:
+                documentType: "Document type is not recognized."
+
+  examples:
+    SubmissionRecordExample:
+      summary: A successfully created submission
+      value:
+        id: "sub_lihdv207"
+        status: "received"
+        employeeName: "Kumar Utkarsh"
+        requestId: "REQ-2026-0091"
+        documentType: "passport"
+        submissionDate: "2026-09-08"
+        documentName: "passport_scan.pdf"
+        createdAt: "2026-09-08T11:29:04.000Z"
+
+    ValidationErrorExample:
+      summary: Document type not recognized
+      value:
+        error: "validation_error"
+        message: "One or more fields failed server-side validation."
+        fields:
+          documentType: "Document type is not recognized."
+
+    UnauthorizedExample:
+      summary: Expired or missing session
+      value:
+        error: "unauthorized"
+        message: "Your session has expired. Please sign in again."
+
+    NotFoundExample:
+      summary: Endpoint not found
+      value:
+        error: "not_found"
+        message: "The submissions endpoint could not be found."
+
+    ConflictExample:
+      summary: Duplicate Request ID
+      value:
+        error: "conflict"
+        message: "A submission with this Request ID already exists."
+
+    ServerErrorExample:
+      summary: Unexpected failure
+      value:
+        error: "server_error"
+        message: "Something went wrong while processing your request."
