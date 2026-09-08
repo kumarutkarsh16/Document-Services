@@ -1,0 +1,32 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor/IDE
+.vscode/
+.idea/
+*.swp
+
+# Dependencies (in case tooling is added later)
+node_modules/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Environment / secrets — never commit real API keys or credentials
+.env
+.env.*
+*.pem
+*.key
+
+# Build output (if a bundler is introduced later)
+dist/
+build/
+
+# Local per-task snapshot folders — not part of the tracked project
+task0_html/
+task1_css/
+task2_js/
+task3_advancedjs/
+task4_apicontract/
