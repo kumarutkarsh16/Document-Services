@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="styles.css">
+        <title>New Hire Document Submission</title>
+    </head>
+
+    <body>
+        <header>
+            <div class="masthead">
+                <p class="org-name">Human Resources</p>
+                <p class="org-subtitle">Document Services</p>
+            </div>
+
+            <nav>
+                <a href="#">Home</a>
+                <a href="#">Documents</a>
+                <a href="#">Help</a>
+            </nav>
+        </header>
+
+        <main>
+            <div class="page-heading">
+                <h1>New Hire Document Submission</h1>
+                <p>Complete the form below to submit the required documents for a new employee record.</p>
+            </div>
+
+            <section>
+                <form class="employee-form">
+
+                    <fieldset>
+                        <legend>Employee Details</legend>
+
+                        <div class="form-fields">
+                            <div class="form-group">
+                                <label for="empname">Employee Name *</label>
+                                <input type="text" id="empname" name="empname" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="requestid">Request ID *</label>
+                                <input type="text" id="requestid" name="requestid" required>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset>
+                        <legend>Document Details</legend>
+
+                        <div class="form-fields">
+                            <div class="form-group">
+                                <label for="documenttype">Document Type *</label>
+                                <select id="documenttype" name="documenttype" required>
+                                    <option value="">Select Document Type</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="subdate">Submission Date *</label>
+                                <input type="date" id="subdate" name="subdate" required>
+                            </div>
+
+                            <div class="form-group form-group-wide">
+                                <label for="document">Upload Document *</label>
+                                <input type="file" id="document" name="document" required>
+                                <p id="file-name"></p>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset>
+                        <legend>Confirmation</legend>
+
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="consent" name="consent" required>
+                            <label for="consent">I confirm that the information provided is accurate.</label>
+                        </div>
+                    </fieldset>
+
+                    <p class="test-hint">
+                        Note &mdash; for testing: enter <code>TEST-400</code>, <code>TEST-401</code>,
+                        <code>TEST-404</code>, <code>TEST-409</code>, or <code>TEST-500</code> as the
+                        Request ID to trigger that server response. Any other Request ID succeeds.
+                    </p>
+
+                    <div class="form-actions">
+                        <button type="submit">Submit</button>
+                        <button type="reset">Reset</button>
+                    </div>
+
+                    <div class="validation-area">
+                        <p>Fields marked with * are required.</p>
+                    </div>
+                </form>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2026 HR Department. All rights reserved.</p>
+        </footer>
+
+        <script src="config.js"></script>
+        <script src="mock-server.js"></script>
+        <script src="app.js" defer></script>
+    </body>
+</html>
